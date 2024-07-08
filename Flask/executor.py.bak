@@ -1,0 +1,74 @@
+import logging, paramiko
+#Se encarga de ejecutar comandos en un servidor remoto por SSH.
+#Requiere un cliente de SSH hecho con el módulo Paramiko de Python
+
+#Ejecuta un arreglo de varios comandos, por ejemplo:
+#commands = ['mkdir /any_dir', 'touch /anydir/anyfile' ,'rm -rf /any_dir']
+
+import logging
+logger = logging.getLogger(__name__)
+
+
+def execute(client, commands, extra):
+    try:
+        for command in commands:
+            logger.info("Ejecutando: "+command, extra=extra)
+            stdin, stdout, stderr = client.exec_command(command)
+            stdin.close()
+            
+            out = stdout.read().decode().rstrip()
+            if out:
+                extra = {
+                    'respaldo':"Siara - Paralelo"
+                }
+                logger.info(out, extra=extra)
+            logger.debug(stdout.read().decode(), extra=extra)
+            if(stdout.channel.recv_exit_status()!=0):
+                logger.error("Proceso terminado con errores: " + str(stdout.channel.recv_exit_status()), extra=extra)
+                err = stderr.read().decode()
+                out = stdout.read().decode()
+                if out:
+                    logger.info(out, extra=extra)
+                if err:
+                    logger.error(err, extra=extra)
+    except Exception as e:
+        raise Exception(repr(e))
+
+#Ejecuta un solo comando, por ejemplo:
+#command = 'touch anyfile'
+def execute_single(client, command, extra):
+    try:
+        extra = {
+            'respaldo':"Siara - Paralelo"
+        }
+        logger.info("Ejecutando: "+command, extra=extra)
+        stdin, stdout, stderr = client.exec_command(command)
+        stdin.close()
+        out = stdout.read().decode().rstrip()
+        if out:
+            logger.info(out, extra=extra)
+        logger.debug(stdout.read().decode(), extra=extra)
+        if(stdout.channel.recv_exit_status()!=0):
+            logger.error("Proceso terminado con errores: " + str(stdout.channel.recv_exit_status()), extra=extra)
+            err = stderr.read().decode()
+            if err:
+                logger.error(err, extra=extra)
+    except:
+        raise Exception('Fallo al ejecutar comando')
+
+def execute_dedicated(command, hostname, username, password, port, extra):
+    #Hazte un cliente paramiko nuevo, a fuerzas
+    #Tiene que ser nuevo
+    #Nuevo!!!!
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        client.connect(hostname=hostname, username=username, password=password, port=port)
+    except:
+        logger.critical("[!] Cannot connect to the SSH Server", extra=extra)
+
+    #logging.info("Ejecutando los comandos por SSH...")
+    execute_single(client, command, extra)
+
+    #logging.info("[OK]")
+    client.close()

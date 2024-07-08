@@ -1,0 +1,35 @@
+<?php include 'assets/header.php';?>
+<?php
+include "config.php";
+    if (isset($_GET['id'])) {
+        $id_backup = $_GET['id'];
+        $sql = "SELECT COUNT(*) as cant_bloques from (SELECT * from codigo where id_backup=".$id_backup." group by no_bloque) cant_bloques";
+        
+        $result = $conn->query($sql);
+                if ($result->num_rows > 0) {
+                    $row = $result->fetch_assoc();
+                    $cant_bloques = $row['cant_bloques'];
+                }
+    }
+?>
+<?php
+$sql = 'SELECT no_bloque from codigo where id_backup = '.$_GET['id'].' group by no_bloque order by no_bloque';
+$result = $conn->query($sql);
+while ($row = $result->fetch_assoc()) {
+    $sql = "SELECT no_linea, linea, no_bloque FROM codigo WHERE id_backup=".$id_backup." AND no_bloque=".$row['no_bloque'];
+    $result2 = $conn->query($sql);
+    echo '<div class="m-4 border">';
+    echo "<h3>Bloque: ".$row['no_bloque']."</h3>";
+        while($row2 = $result2->fetch_assoc()){
+            echo '<p>'.$row2['no_linea'].' - '.$row2['linea'].'<button type="button" class="btn btn-primary" style="float: right;">Editar</button></p><br>';
+        }
+    echo '<a class="btn btn-success" href="add-linea.php?id_backup='.$_GET['id'].'&id_bloque='.$row['no_bloque'].'">Nueva línea</a>';
+    echo "</div>";
+}
+
+?>
+<br>
+<div class="m-4">
+    <a class="btn btn-info" href="add-bloque.php?id_backup=<?php echo $_GET['id']; ?>">Nuevo bloque</a>
+</div>
+<?php include 'assets/footer.php';?>
