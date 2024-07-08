@@ -1,5 +1,7 @@
 FROM python:3.11.5
 
+ENV FLASK_APP main
+ENV FLASK_ENV development
 ENV FLASK_CORS_OPTIONS *
 ENV ABKP_DB_HOST auto-backup-mariadb
 ENV ABKP_DB_USER auto-backup
