@@ -22,6 +22,11 @@ RUN chgrp -R 0 . && \
 # the approriate places.
 # This can obviously be done differently, and in that case, the final CMD
 # should be set to "CMD httpd -D FOREGROUND" instead.
+RUN sudo yum update -y
+RUN sudo yum install https://repo.ius.io/ius-release-el$(rpm -E '%{rhel}').rpm
+RUN sudo yum update -y
+RUN sudo yum install -y python3
+
 EXPOSE 8080
 USER apache
 CMD /usr/libexec/s2i/run
