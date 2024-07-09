@@ -3,7 +3,7 @@ FROM ubi7/php-73
 # Add application sources
 ADD phpMyAdmin .
 USER root
-#RUN chown apache:apache -R .
+RUN chown apache:apache -R .
 RUN chgrp -R 0 . && \
     chmod -R g=u .
 
