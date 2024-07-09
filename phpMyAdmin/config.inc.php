@@ -112,7 +112,7 @@ $cfg['SaveDir'] = '';
  * uncomment the desired line:
  * default = 'en'
  */
-//$cfg['DefaultLang'] = 'en';
+$cfg['DefaultLang'] = 'en';
 //$cfg['DefaultLang'] = 'de';
 
 /**
@@ -158,4 +158,3 @@ $cfg['SaveDir'] = '';
  * You can find more configuration options in the documentation
  * in the doc/ folder or at <https://docs.phpmyadmin.net/>.
  */
-$cfg['Lang'] = 'en';
